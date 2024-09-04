@@ -8,8 +8,32 @@
     var password = document.querySelector('.password');
     const loadCircle = document.querySelector('.load-circle');
     var logo = document.querySelector('.logo');
+    //**********************************************************************************
+    const firebaseConfig = {
+        apiKey: "AIzaSyCPH9o5EiEw8HVzm9j-5xTuWE8cTYLOuLg",
+        authDomain: "personal-web-ac563.firebaseapp.com",
+        projectId: "personal-web-ac563",
+        storageBucket: "personal-web-ac563.appspot.com",
+        messagingSenderId: "650421723566",
+        appId: "1:650421723566:web:54950c8be718fdff98a83f",
+        measurementId: "G-9N62M8S6TL",
+      };
+      firebase.initializeApp(firebaseConfig);
 
-    // write section behavior of response 
+
+
+      var database = firebase.database();
+      database.ref('data').set({
+          name: 'di w',
+          age: 20
+      });
+
+      database.ref('data').once('value',function(snapshot){
+            var data = snapshot.val();
+            console.log(data.name);
+            console.log(data.age);
+      });
+    //**********************************************************************************
     let db;
     const request = indexedDB.open("textSaverDB", 1);
 
@@ -320,8 +344,13 @@
 
     request.onsuccess = function(event) {
         db = event.target.result;
-        loadMessages();
+        loadMessagesFromFirestore();
     };
+    
+    // request.onsuccess = function(event) {
+    //     db = event.target.result;
+    //     loadMessages();
+    // };
 
     request.onerror = function(event) {
         console.error("IndexedDB error: " + event.target.errorCode);
@@ -345,37 +374,61 @@
     }
     
 
-    function saveMessage(message, date, image) {
-        const transaction = db.transaction("messages", "readwrite");
-        const store = transaction.objectStore("messages");
-        const entry = {text: message, date:date, image:image};
+    // function saveMessage(message, date, image) {
+    //     const transaction = db.transaction("messages", "readwrite");
+    //     const store = transaction.objectStore("messages");
+    //     const entry = {text: message, date:date, image:image};
 
-        store.add(entry);
+    //     store.add(entry);
         
 
-        transaction.oncomplete = function() {
-            console.log("Message stored successfully.");
-        };
-        transaction.onerror = function(event) {
-            console.error("Error storing message:", event.target.error);
-        };
+    //     transaction.oncomplete = function() {
+    //         console.log("Message stored successfully.");
+    //     };
+    //     transaction.onerror = function(event) {
+    //         console.error("Error storing message:", event.target.error);
+    //     };
 
+    // }
 
+    async function saveMessageToFirestore(message, date, image) {
+        try {
+            const docRef = await firebasedb.collection("posts").add({
+                text: message,
+                date: date,
+                image: image || null // If image is null, store it as null
+            });
+            console.log("Document written with ID: ", docRef.id);
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
     }
 
-    function loadMessages() {
-        const transaction = db.transaction("messages", "readonly");
-        const store = transaction.objectStore("messages");
-
-        store.openCursor().onsuccess = function(event) {
-            const cursor = event.target.result;
-            if (cursor) {
-                const {text,date,image} = cursor.value;
-                displayMessage(text,date,image);
-                cursor.continue();
-            }
-        };
+async function loadMessagesFromFirestore() {
+        try {
+            const querySnapshot = await firebasedb.collection("posts").get();
+            querySnapshot.forEach((doc) => {
+                const { text, date, image } = doc.data();
+                displayMessage(text, date, image);
+            });
+        } catch (e) {
+            console.error("Error getting documents: ", e);
+        }
     }
+    
+    // function loadMessages() {
+    //     const transaction = db.transaction("messages", "readonly");
+    //     const store = transaction.objectStore("messages");
+
+    //     store.openCursor().onsuccess = function(event) {
+    //         const cursor = event.target.result;
+    //         if (cursor) {
+    //             const {text,date,image} = cursor.value;
+    //             displayMessage(text,date,image);
+    //             cursor.continue();
+    //         }
+    //     };
+    // }
 
 
     function displayMessage(message, date, image) {
@@ -442,37 +495,57 @@
 
     }
  
-
-document.getElementById("post-button").addEventListener("click", async function() {
+    document.getElementById("post-button").addEventListener("click", async function() {
         const userInput = document.getElementById("userInput").value;
         const image = document.getElementById("post-image").files[0];
         const date = getDate();
-        // clearPage();
-    if (userInput){
-
-        if(image){
-        const base64String = await fileToBase64(image);
-        saveMessage(userInput,date,base64String);
-        displayMessage(userInput,date,base64String);
+        
+        if (userInput) {
+            let base64String = null;
+            if (image) {
+                base64String = await fileToBase64(image);
+            }
+            await saveMessageToFirestore(userInput, date, base64String);
+            displayMessage(userInput, date, base64String);
         }
-
-        else{
-            saveMessage(userInput,date,null);
-            displayMessage(userInput,date,null);
+    
+        document.getElementById("userInput").value = "";
+        if (image) {
+            clearFile();
         }
+    });
+
+    
+// document.getElementById("post-button").addEventListener("click", async function() {
+//         const userInput = document.getElementById("userInput").value;
+//         const image = document.getElementById("post-image").files[0];
+//         const date = getDate();
+//         // clearPage();
+//     if (userInput){
+
+//         if(image){
+//         const base64String = await fileToBase64(image);
+//         saveMessage(userInput,date,base64String);
+//         displayMessage(userInput,date,base64String);
+//         }
+
+//         else{
+//             saveMessage(userInput,date,null);
+//             displayMessage(userInput,date,null);
+//         }
        
         
 
-        textarea.style.paddingBottom = "2%";
+//         textarea.style.paddingBottom = "2%";
         
-    }
+//     }
 
-    document.getElementById("userInput").value = "";
+//     document.getElementById("userInput").value = "";
     
-    if (image){
-        clearFile();}
+//     if (image){
+//         clearFile();}
 
-});
+// });
     
 
 
