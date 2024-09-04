@@ -12,6 +12,7 @@
     const firebaseConfig = {
         apiKey: "AIzaSyCPH9o5EiEw8HVzm9j-5xTuWE8cTYLOuLg",
         authDomain: "personal-web-ac563.firebaseapp.com",
+        databaseURL:"https://personal-web-ac563-default-rtdb.firebaseio.com/",
         projectId: "personal-web-ac563",
         storageBucket: "personal-web-ac563.appspot.com",
         messagingSenderId: "650421723566",
