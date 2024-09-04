@@ -9,6 +9,8 @@
     const loadCircle = document.querySelector('.load-circle');
     var logo = document.querySelector('.logo');
     //**********************************************************************************
+    import firebase from 'firebase/app';
+    import 'firebase/firestore';
     const firebaseConfig = {
         apiKey: "AIzaSyCPH9o5EiEw8HVzm9j-5xTuWE8cTYLOuLg",
         authDomain: "personal-web-ac563.firebaseapp.com",
@@ -20,7 +22,7 @@
         measurementId: "G-9N62M8S6TL",
       };
     firebase.initializeApp(firebaseConfig);
-    const firebasedb = firebase.database();
+    const firebasedb = firebase.firestore();
 
 
       var database = firebase.database();
