@@ -9,8 +9,6 @@
     const loadCircle = document.querySelector('.load-circle');
     var logo = document.querySelector('.logo');
     //**********************************************************************************
-    import firebase from 'firebase/app';
-    import 'firebase/firestore';
     const firebaseConfig = {
         apiKey: "AIzaSyCPH9o5EiEw8HVzm9j-5xTuWE8cTYLOuLg",
         authDomain: "personal-web-ac563.firebaseapp.com",
