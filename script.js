@@ -25,7 +25,7 @@
 
       var database = firebase.database();
       database.ref('data').set({
-          name: 'di w',
+          name: 'di wa',
           age: 20
       });
 
