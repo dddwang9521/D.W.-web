@@ -20,7 +20,7 @@
         measurementId: "G-9N62M8S6TL",
       };
     firebase.initializeApp(firebaseConfig);
-    const firebasedb = firebase.firestore();
+    const firebasedb = firebase.database();
 
 
       var database = firebase.database();
