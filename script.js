@@ -1,4 +1,7 @@
     
+    import {firebasedb} from './firebase-config.js'; 
+    import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
     var textarea = document.getElementById("userInput");
     var loadContainer = document.querySelector('#load-container');
     var guestButton = document.querySelector('.buttons.guest');
@@ -9,31 +12,20 @@
     const loadCircle = document.querySelector('.load-circle');
     var logo = document.querySelector('.logo');
     //**********************************************************************************
-    const firebaseConfig = {
-        apiKey: "AIzaSyCPH9o5EiEw8HVzm9j-5xTuWE8cTYLOuLg",
-        authDomain: "personal-web-ac563.firebaseapp.com",
-        databaseURL:"https://personal-web-ac563-default-rtdb.firebaseio.com/",
-        projectId: "personal-web-ac563",
-        storageBucket: "personal-web-ac563.appspot.com",
-        messagingSenderId: "650421723566",
-        appId: "1:650421723566:web:54950c8be718fdff98a83f",
-        measurementId: "G-9N62M8S6TL",
-      };
-    firebase.initializeApp(firebaseConfig);
-    const firebasedb = firebase.firestore();
 
+    
+    //   var database = app.database();
+    //   database.ref('data').set({
+    //       name: 'di w',
+    //       age: 20
+    //   });
 
-      var database = firebase.database();
-      database.ref('data').set({
-          name: 'di wa',
-          age: 20
-      });
+    //   database.ref('data').once('value',function(snapshot){
+    //         var data = snapshot.val();
+    //         console.log(data.name);
+    //         console.log(data.age);
+    //   });
 
-      database.ref('data').once('value',function(snapshot){
-            var data = snapshot.val();
-            console.log(data.name);
-            console.log(data.age);
-      });
     //**********************************************************************************
     let db;
     const request = indexedDB.open("textSaverDB", 1);
@@ -182,7 +174,7 @@
         if (key == 'Enter'){
             array.pop();
             console.log(array);
-            for (i=0; i<array.length; i++){
+            for (var i=0; i<array.length; i++){
                 if (correctPassword[i] == array[i]){
                    check = true;
                    
@@ -394,10 +386,11 @@
 
     async function saveMessageToFirestore(message, date, image) {
         try {
-            const docRef = await firebasedb.collection("posts").add({
+            // Use addDoc to add a new document to the "posts" collection
+            const docRef = await addDoc(collection(firebasedb, "posts"), {
                 text: message,
                 date: date,
-                image: image || null // If image is null, store it as null
+                image: image || null  // Store image or null
             });
             console.log("Document written with ID: ", docRef.id);
         } catch (e) {
@@ -406,16 +399,18 @@
     }
 
 async function loadMessagesFromFirestore() {
-        try {
-            const querySnapshot = await firebasedb.collection("posts").get();
-            querySnapshot.forEach((doc) => {
-                const { text, date, image } = doc.data();
-                displayMessage(text, date, image);
-            });
-        } catch (e) {
-            console.error("Error getting documents: ", e);
-        }
+    try {
+        // Use collection and getDocs to retrieve documents
+        const querySnapshot = await getDocs(collection(firebasedb, "posts"));
+        querySnapshot.forEach((doc) => {
+            const { text, date, image } = doc.data();
+            displayMessage(text, date, image); // Assuming displayMessage is your function to display the post
+        });
+    } catch (e) {
+        console.error("Error getting documents: ", e);
     }
+}
+
     
     // function loadMessages() {
     //     const transaction = db.transaction("messages", "readonly");
